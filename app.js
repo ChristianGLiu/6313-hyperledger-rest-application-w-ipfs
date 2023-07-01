@@ -4,17 +4,31 @@
 
 // 'use strict';
 
-const { Gateway, Wallets } = require('fabric-network');
-const FabricCAServices = require('fabric-ca-client');
-const path = require('path');
-// const $ = jQuery = require('jquery')
+import { Gateway, Wallets } from 'fabric-network';
+import FabricCAServices from 'fabric-ca-client';
+import path from 'path';
+// import $, { jQuery } from 'jquery';
 
-const CAUtil = require('./lib/CAUtil.js');
-const AppUtil = require('./lib/AppUtil.js');
-const { buildCAClient, registerAndEnrollUser, enrollAdmin } = require('./lib/CAUtil.js');
-const { buildCCPOrg1, buildWallet } = require('./lib/AppUtil.js');
+// import CAUtil from './lib/CAUtil.js';
+import AppUtil from './lib/AppUtil.js';
+// import { buildCAClient, registerAndEnrollUser, enrollAdmin } from './lib/CAUtil.js';
+const { buildCCPOrg1, buildWallet } = AppUtil;
 
+import { create } from 'ipfs-http-client';
+// connect to the default API address http://localhost:5001
+const client = create();
 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+import { AbortController } from "node-abort-controller";
+
+global.AbortController = AbortController;
+
+var MFS_path = '/files_this_is_a_purchase_document';
 // const channelName = 'mychannel';
 // const chaincodeName = 'basic';
 // const mspOrg1 = 'Org1MSP';
@@ -36,8 +50,10 @@ const mspOrg1 = 'Org1MSP';
 const org1UserId = 'appUser';
 
 // http server config
-const http = require("http");
-const url = require('url');
+// const http = require("http");
+// const url = require('url');
+import http from "http";
+import url from 'url';
 
 
 const host = '0.0.0.0';
@@ -143,10 +159,25 @@ async function getActorConnection() {
 	return networkConnections['nonPrivateData']
 }
 
+//"This is a new purchase document!"
 async function createAsset(id, value) {
-	console.log('\n--> Evaluate Transaction: createAsset, function returns "true" if an asset with given assetID exist');
-	let contract = await getActorConnection()
-	let result = await contract.submitTransaction('createMyAsset', id, value);
+	let result;
+	client.files.write(MFS_path,
+		new TextEncoder().encode(value),
+		{ create: true }).then(async r => {
+
+			client.files.stat(MFS_path, { hash: true }).then(async r => {
+				let ipfsAddr = r.cid.toString();
+				console.log("added file ipfs:", ipfsAddr)
+				// console.log("created message on IPFS:", cid);
+				let contract = await getActorConnection()
+				result = await contract.submitTransaction('createMyAsset', id, ipfsAddr);
+				// console.log(content.toString());
+			});
+		}).catch(e => {
+			console.log(e);
+		});
+
 	return result;
 }
 
@@ -162,8 +193,17 @@ async function readAsset(id) {
 	console.log('\n--> Evaluate Transaction: ReadAsset, function returns "asset1" attributes');
 	let contract = await getActorConnection()
 	let result = await contract.evaluateTransaction('readMyAsset', id);
-	console.log(`*** Result: ${prettyJSONString(result.toString())}`);
-	return result;
+	let resultValue = JSON.parse(result.toString()).value;
+	console.log(`*** Result: ${resultValue}`);
+	const resp = await client.cat(resultValue);
+	let content = [];
+	for await (const chunk of resp) {
+		content = [...content, ...chunk];
+		const raw = Buffer.from(content).toString('utf8')
+		// console.log(JSON.parse(raw))
+		console.log(raw)
+	}
+	return Buffer.from(content).toString('utf8');
 }
 
 async function deleteAsset(id) {
@@ -227,13 +267,13 @@ const requestListener = async function (req, res) {
 		res.writeHead(200);
 		res.end(result);
 
-	}else if (req.url.startsWith("/delete")) {
+	} else if (req.url.startsWith("/delete")) {
 		txid = queryObject.txid
 		result = await deleteAsset(txid)
 		res.writeHead(200);
 		res.end(result);
 
-	}else  {
+	} else {
 		res.writeHead(200);
 		result = await getAllAssets()
 		res.end(result);

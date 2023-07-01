@@ -1,6 +1,7 @@
 {
     "name": "asset-transfer-basic",
     "version": "1.0.0",
+    "type": "module",
     "private": true,
     "description": "A supplementary project for actor-fsm-model",
     "engines": {
@@ -12,7 +13,9 @@
     "dependencies": {
         "fabric-ca-client": "2.2.2",
         "fabric-network": "2.2.2",
-        "jquery": "^3.6.0",
-        "url": "^0.11.0"
+        "ipfs-http-client": "^60.0.1",
+        "jquery": "^3.7.0",
+        "node-abort-controller": "^3.1.1",
+        "url": "^0.11.1"
     }
 }
