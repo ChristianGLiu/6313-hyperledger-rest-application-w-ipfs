@@ -182,10 +182,23 @@ async function createAsset(id, value) {
 }
 
 async function updateAsset(id, value) {
-	console.log('\n--> Evaluate Transaction: updateMyAsset, function returns "true" if an asset with given assetID exist');
-	let contract = await getActorConnection()
-	let result = await contract.submitTransaction('updateMyAsset', id, value);
-	console.log(`*** Result: ${result}`);
+	let result;
+	client.files.write(MFS_path,
+		new TextEncoder().encode(value),
+		{ create: true }).then(async r => {
+
+			client.files.stat(MFS_path, { hash: true }).then(async r => {
+				let ipfsAddr = r.cid.toString();
+				console.log("added file ipfs:", ipfsAddr)
+				// console.log("created message on IPFS:", cid);
+				let contract = await getActorConnection()
+				result = await contract.submitTransaction('updateMyAsset', id, ipfsAddr);
+				// console.log(content.toString());
+			});
+		}).catch(e => {
+			console.log(e);
+		});
+
 	return result;
 }
 
