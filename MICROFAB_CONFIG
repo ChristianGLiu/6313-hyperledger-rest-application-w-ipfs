@@ -1,0 +1,45 @@
+{
+    "endorsing_organizations":[
+        {
+            "name": "actorfsmmodel"
+        }
+    ],
+    "channels":[
+        {
+            "name": "partial",
+            "endorsing_organizations":[
+                "actorfsmmodel"
+            ]
+        },
+        {
+            "name": "buyer",
+            "endorsing_organizations":[
+                "actorfsmmodel"
+            ]
+        },
+        {
+            "name": "seller",
+            "endorsing_organizations":[
+                "actorfsmmodel"
+            ]
+        },
+        {
+            "name": "shippingcompany",
+            "endorsing_organizations":[
+                "actorfsmmodel"
+            ]
+        },
+        {
+            "name": "mainchainonly",
+            "endorsing_organizations":[
+                "actorfsmmodel"
+            ]
+        },
+        {
+            "name": "allinonechannel",
+            "endorsing_organizations":[
+                "actorfsmmodel"
+            ]
+        }
+    ]
+}

@@ -147,15 +147,14 @@ async function createAsset(id, value) {
 	console.log('\n--> Evaluate Transaction: createAsset, function returns "true" if an asset with given assetID exist');
 	let contract = await getActorConnection()
 	let result = await contract.submitTransaction('createMyAsset', id, value);
-	console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 	return result;
 }
 
 async function updateAsset(id, value) {
 	console.log('\n--> Evaluate Transaction: updateMyAsset, function returns "true" if an asset with given assetID exist');
 	let contract = await getActorConnection()
-	let result = await contract.evaluateTransaction('updateMyAsset', id, value);
-	console.log(`*** Result: ${submitTransaction(result.toString())}`);
+	let result = await contract.submitTransaction('updateMyAsset', id, value);
+	console.log(`*** Result: ${result}`);
 	return result;
 }
 
@@ -172,13 +171,13 @@ async function deleteAsset(id) {
 	let contract = await getActorConnection()
 
 	let result = await contract.submitTransaction('deleteMyAsset', id);
-	console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+	console.log(`*** Result: ${result}`);
 	return result;
 }
 
 async function getAllAssets() {
 	console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
-	let contract = await getActorConnection(actor)
+	let contract = await getActorConnection()
 	let result = await contract.evaluateTransaction('GetAllAssets');
 	return result;
 }
