@@ -182,24 +182,7 @@ async function createAsset(id, value) {
 }
 
 async function updateAsset(id, value) {
-	let result;
-	client.files.write(MFS_path,
-		new TextEncoder().encode(value),
-		{ create: true }).then(async r => {
-
-			client.files.stat(MFS_path, { hash: true }).then(async r => {
-				let ipfsAddr = r.cid.toString();
-				console.log("added file ipfs:", ipfsAddr)
-				// console.log("created message on IPFS:", cid);
-				let contract = await getActorConnection()
-				result = await contract.submitTransaction('updateMyAsset', id, ipfsAddr);
-				// console.log(content.toString());
-			});
-		}).catch(e => {
-			console.log(e);
-		});
-
-	return result;
+	// students need to complete this function ..
 }
 
 async function readAsset(id) {
@@ -222,7 +205,6 @@ async function readAsset(id) {
 async function deleteAsset(id) {
 	console.log('\n--> Evaluate Transaction: DeleteAsset, function returns "true" if an asset with given assetID exist');
 	let contract = await getActorConnection()
-
 	let result = await contract.submitTransaction('deleteMyAsset', id);
 	console.log(`*** Result: ${result}`);
 	return result;
