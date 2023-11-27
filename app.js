@@ -217,7 +217,10 @@ async function getAllAssets() {
 	return result;
 }
 
-
+async function verify() {
+	// Similar to the verify function in the Ethereum smart contract from Assignment 3, 
+	// create a verify method on the chaincode. Once that's done, add the necessary logic in app.js to implement and verify this method.
+}
 
 const requestListener = async function (req, res) {
 
